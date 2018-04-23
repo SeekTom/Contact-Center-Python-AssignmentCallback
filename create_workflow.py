@@ -4,11 +4,10 @@ import os
 
 account_sid = os.environ.get("TWILIO_ACME_ACCOUNT_SID")
 auth_token = os.environ.get("TWILIO_ACME_AUTH_TOKEN")
-
+workspace_sid = os.environ.get("TWILIO_ACME_ALT_WORKSPACE")
+salesTaskQueue_sid = workspace_sid = os.environ.get("TWILIO_ACME_SALES_TASKQUEUE")
 
 client = Client(account_sid,auth_token)
-workspace_sid ='WSe196cf7ff1aa17087dbfdd26c5b2f9ae'
-salesTaskQueue_sid = 'WQaaf8af8ce62aae07dcbebd5b158655e2'
 
 config = {
     'task_routing': {
