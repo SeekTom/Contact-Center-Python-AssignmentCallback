@@ -6,6 +6,14 @@ import os
 
 app = Flask(__name__)
 
+workflow_sid = ''
+account_sid = os.environ.get("TWILIO_ACME_ACCOUNT_SID")
+auth_token = os.environ.get("TWILIO_ACME_AUTH_TOKEN")
+workspace_sid = os.environ.get("TWILIO_ACME_ALT_WORKSPACE")
+caller_id = os.environ.get("TWILIO_ACME_CALLER_ID")
+wrap_up = os.environ.get("TWILIO_ACME_ALT_WRAP_UP_ACTIVITY")
+
+client = Client(account_sid, auth_token)
 
 @app.route('/')
 def hello_world():
@@ -23,12 +31,6 @@ def hello_customer():
 def handle_input():
     if 'Digits' in request.values:
         choice = int(request.values['Digits'])
-        switcher = {
-            1: os.environ.get('TWILIO_ACME_ALT_SALES_WORKFLOW'),
-            2: os.environ.get('TWILIO_ACME_ALT_SUPPORT_WORKFLOW'),
-            3: os.environ.get('TWILIO_ACME_ALT_BILLING_WORKFLOW')
-        }
-
         dept = {
             1: "sales",
             2: "support",
@@ -38,7 +40,7 @@ def handle_input():
 
         resp = VoiceResponse()
 
-        with resp.enqueue(workflow_sid=switcher[choice]) as e:
+        with resp.enqueue(workflow_sid=workflow_sid) as e:
             e.task('{"selected_product" : "' + dept[choice] + '"}')
 
     else:
@@ -50,14 +52,7 @@ def handle_input():
 
 @app.route('/assignment_callback', methods=['POST', 'GET'])
 def assign_task():
-
-    account_sid = os.environ.get("TWILIO_ACME_ACCOUNT_SID")
-    auth_token = os.environ.get("TWILIO_ACME_AUTH_TOKEN")
-    workspace_sid = os.environ.get("TWILIO_ACME_ALT_WORKSPACE")
-    caller_id = os.environ.get("TWILIO_ACME_CALLER_ID")
-    wrap_up = os.environ.get("TWILIO_ACME_ALT_WRAP_UP_ACTIVITY")
-    client = Client(account_sid, auth_token)
-
+    
     task_sid = request.values.get('TaskSid')
     reservation_sid = request.values.get('ReservationSid')
     print(reservation_sid)
